@@ -1,0 +1,47 @@
+Program.Sub.ScreenSU.Start
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'enm
+'Butterworth Systems
+'7/26/2010
+'User Hook/User Menu
+
+F.ODBC.Connection!con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+F.Intrinsic.Control.CallSub(Create_quote)
+
+
+Program.Sub.Main.End
+
+Program.Sub.Create_Quote.Start
+V.Local.sSQL.Declare(String)
+V.Local.sDate.Declare(String)
+V.Local.sOppID.Declare(String)
+
+V.Local.sDate.Set("2009-01-01")
+F.Intrinsic.String.Concat("Select * from V_Quote_Header where Date_Quote>='",V.Local.sDate.PervasiveDate,"' order by Date_Quote",V.Local.sSQL)
+F.ODBC.Connection!con.OpenRecordsetRO("rstQuote",V.Local.sSQL)
+F.Intrinsic.Control.DoUntil(V.ODBC.con!rstQuote.EOF,=,True)
+	F.Global.CRM.SaveOpportunity(-1,"7",V.ODBC.con!rstQuote.FieldVal!Customer,"15","-1","1","Quote Opportunity","","","","","","","5","32","32769","","","",V.ODBC.con!rstQuote.FieldVal!Quote_No,"000","","",V.Local.sOppID)
+	F.ODBC.con!rstQuote.MoveNext
+F.Intrinsic.Control.Loop
+F.ODBC.con!rstQuote.Close
+F.Intrinsic.Control.CallSub(Unload)
+
+Program.Sub.Create_Quote.End
+
+Program.Sub.Log.Start
+
+Program.Sub.Log.End
+
+Program.Sub.Unload.Start
+F.ODBC.Connection!con.Close
+F.Intrinsic.Control.End
+
+Program.Sub.Unload.End
+
+
